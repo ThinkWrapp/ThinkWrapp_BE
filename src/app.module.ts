@@ -3,9 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { UserModule } from './user/user.module';
-import { UserService } from './user/user.service';
 
-import { ENV_FILE_PATH } from './constant/path';
+import { ENV_FILE_PATH } from './constants/path';
 
 @Module({
     imports: [
@@ -17,6 +16,6 @@ import { ENV_FILE_PATH } from './constant/path';
         UserModule,
     ],
     controllers: [],
-    providers: [UserService],
+    providers: [],
 })
 export class AppModule {}
