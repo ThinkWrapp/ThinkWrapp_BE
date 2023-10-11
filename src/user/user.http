@@ -1,0 +1,25 @@
+@server = http://localhost:3000
+
+### 유저 생성
+POST {{server}}/user/create
+Content-Type: application/json
+
+{
+    "email": "gg@gmail.com",
+    "password": "Ttest1234",
+    "username": "오이조아"
+}
+
+### 유저 정보 찾기
+GET {{server}}/user/getUser/gg@gmail.com
+
+### 유저 업데이트
+PUT {{server}}/user/update/gg@gmail.com
+Content-Type: application/json
+
+{
+    "username": "쏘카조아"
+}
+
+### 유저 삭제
+DELETE {{server}}/user/delete/gg@gmail.com
