@@ -9,7 +9,7 @@ import { PassportModule } from '@nestjs/passport/dist';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
-import { jwtConstants } from 'src/constants/token';
+import { jwtConstants } from 'src/constants/secret';
 import { JwtAuthGuard } from './guards/jwtAuth.guard';
 
 @Module({
