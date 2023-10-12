@@ -7,7 +7,8 @@ Content-Type: application/json
 {
     "email": "gg@gmail.com",
     "password": "Ttest1234",
-    "username": "오이조아"
+    "username": "오이조아",
+    "confirmPassword": "Ttest1234"
 }
 
 ### 유저 정보 찾기
