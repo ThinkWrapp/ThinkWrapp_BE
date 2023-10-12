@@ -24,3 +24,8 @@ Content-Type: application/json
 GET {{server}}/auth/profile
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkxlZSIsInJvbGVzIjpbInVzZXIiXSwic3ViIjoiNjUyN2JjNmU1MDM4MGEwNTE5MjE5ODJiIiwiaWF0IjoxNjk3MTEzMzYyLCJleHAiOjE2OTcxMTUxNjJ9.52hwtsUPUGLJd_IN3DgcOsosnyVoOkti-SQSG9vvp5s
+
+### 리프레쉬 토큰 쿠키 테스트
+POST  {{server}}/auth/refreshToken
+Content-Type: application/json
+credentials: 'include'
