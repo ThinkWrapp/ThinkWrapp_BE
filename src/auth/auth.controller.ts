@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    Post,
+    Request,
+    Response,
+    UseGuards,
+    UnauthorizedException,
+} from '@nestjs/common';
 import { CreateUserDto } from 'src/user/user.dto';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/localAuth.guard';
@@ -15,13 +24,40 @@ export class AuthController {
         return this.authService.register(userDto);
     }
 
+    @Public()
     @UseGuards(LocalAuthGuard)
     @Post('login')
-    login(@Request() req) {
-        return this.authService.login(req.user);
+    login(@Request() req, @Response() res) {
+        return this.authService.login(req.user, res);
     }
 
-    @UseGuards(JwtAuthGuard)
+    @Public()
+    @Post('refreshToken')
+    async refresh(@Request() req) {
+        const refreshToken = req.cookies?.refresh;
+
+        if (!refreshToken) {
+            throw new UnauthorizedException('리프레쉬 토큰이 없습니다.');
+        }
+
+        const user = await this.authService.validateRefreshToken(refreshToken);
+
+        if (!user) {
+            throw new UnauthorizedException('리프레쉬 토큰이 만료되었습니다.');
+        }
+
+        const access_token = this.authService.generateAccessToken(user);
+
+        return { access_token };
+    }
+
+    @Public()
+    @Post('logout')
+    logout(@Response() res) {
+        res.clearCookie('refresh');
+        return { message: '로그아웃 되었습니다.' };
+    }
+
     @Get('profile')
     getProfile(@Request() req) {
         return req.user;

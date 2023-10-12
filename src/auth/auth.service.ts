@@ -9,7 +9,8 @@ import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/user/user.dto';
 import { UserService } from 'src/user/user.service';
 
-import { AuthUserType } from 'src/types/auth';
+import { AuthJwtPayloadType, AuthUserType } from 'src/types/auth';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -58,11 +59,33 @@ export class AuthService {
         return null;
     }
 
-    login(user: AuthUserType) {
+    login(user: AuthUserType, res: Response) {
         const payload = { username: user.username, roles: user.roles, sub: user._id };
+        const access_token = this.jwtService.sign(payload);
+        const refresh_token = this.jwtService.sign(payload, { expiresIn: '7d' });
 
-        return {
-            access_token: this.jwtService.sign(payload),
-        };
+        res.cookie('refresh', refresh_token, {
+            httpOnly: true,
+            maxAge: 1000 * 60 * 60 * 24 * 7,
+            sameSite: 'lax',
+            secure: false,
+        });
+
+        return res.json({ message: '로그인에 성공하였습니다.', access_token });
+    }
+
+    async validateRefreshToken(refreshToken: string): Promise<AuthJwtPayloadType | null> {
+        try {
+            const userPayload = this.jwtService.verify(refreshToken);
+
+            return userPayload;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    generateAccessToken(user: AuthJwtPayloadType) {
+        const payload = { username: user.username, roles: user.roles, sub: user.sub };
+        return this.jwtService.sign(payload);
     }
 }
