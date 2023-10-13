@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UserMongoRepository } from './user.repository';
 import { CreateUserDto, UpdateUserDto } from './user.dto';
+import { AuthUserType } from 'src/types/auth';
 
 @Injectable()
 export class UserService {
@@ -20,5 +21,25 @@ export class UserService {
 
     deleteUser(email: string) {
         return this.userRepository.deleteUser(email);
+    }
+
+    async findByEmailOrSave(
+        email: string,
+        username: string,
+        providerId: string,
+    ): Promise<AuthUserType> {
+        const foundUser = await this.getUser(email);
+
+        if (foundUser) {
+            return foundUser;
+        }
+
+        const newUser = await this.userRepository.createUser({
+            email,
+            username,
+            providerId,
+        });
+
+        return newUser;
     }
 }

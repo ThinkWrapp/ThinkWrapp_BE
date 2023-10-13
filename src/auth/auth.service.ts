@@ -11,12 +11,14 @@ import { UserService } from 'src/user/user.service';
 
 import { AuthJwtPayloadType, AuthUserType } from 'src/types/auth';
 import { Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
     constructor(
         private userService: UserService,
         private jwtService: JwtService,
+        private configService: ConfigService,
     ) {}
 
     async register(userDto: CreateUserDto) {
@@ -87,5 +89,24 @@ export class AuthService {
     generateAccessToken(user: AuthJwtPayloadType) {
         const payload = { username: user.username, roles: user.roles, sub: user.sub };
         return this.jwtService.sign(payload);
+    }
+
+    googleAuth(user: AuthUserType, res: Response) {
+        const payload = {
+            username: user.username,
+            roles: user.roles,
+            sub: user.providerId,
+        };
+
+        const refresh_token = this.jwtService.sign(payload, { expiresIn: '7d' });
+
+        res.cookie('refresh', refresh_token, {
+            httpOnly: true,
+            maxAge: 1000 * 60 * 60 * 24 * 7,
+            sameSite: 'lax',
+            secure: false,
+        });
+
+        return res.redirect(`${this.configService.get('FRONTEND_URL')}/loadingAuth`);
     }
 }

@@ -8,6 +8,7 @@ import { JwtModule } from '@nestjs/jwt/dist/jwt.module';
 import { PassportModule } from '@nestjs/passport/dist';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { GoogleStrategy } from './strategies/google.strategy';
 
 import { jwtConstants } from 'src/constants/secret';
 import { JwtAuthGuard } from './guards/jwtAuth.guard';
@@ -27,6 +28,7 @@ import { JwtAuthGuard } from './guards/jwtAuth.guard';
         AuthService,
         LocalStrategy,
         JwtStrategy,
+        GoogleStrategy,
         {
             provide: APP_GUARD,
             useClass: JwtAuthGuard,

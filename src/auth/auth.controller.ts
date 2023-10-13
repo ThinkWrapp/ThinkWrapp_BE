@@ -11,8 +11,8 @@ import {
 import { CreateUserDto } from 'src/user/user.dto';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/localAuth.guard';
-import { JwtAuthGuard } from './guards/jwtAuth.guard';
 import { Public } from './public.decorator';
+import { GoogleAuthGuard } from './guards/googleAuth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -61,5 +61,17 @@ export class AuthController {
     @Get('profile')
     getProfile(@Request() req) {
         return req.user;
+    }
+
+    @Public()
+    @Get('to-google')
+    @UseGuards(GoogleAuthGuard)
+    googleAuth() {}
+
+    @Public()
+    @Get('google')
+    @UseGuards(GoogleAuthGuard)
+    googleAuthRedirect(@Request() req, @Response() res) {
+        return this.authService.googleAuth(req.user, res);
     }
 }
