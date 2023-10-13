@@ -32,13 +32,12 @@ export class AuthService {
         const hashedPassword = await bcrypt.hash(userDto.password, saltOrRounds);
 
         try {
-            const newUser = await this.userService.createUser({
+            await this.userService.createUser({
                 ...userDto,
                 password: hashedPassword,
             });
 
-            newUser.password = undefined;
-            return { message: '회원가입에 성공했습니다.', user: newUser };
+            return { message: '회원가입에 성공했습니다.' };
         } catch (err) {
             throw new InternalServerErrorException('서버 에러');
         }
