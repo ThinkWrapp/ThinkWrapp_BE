@@ -55,10 +55,10 @@ export class AuthController {
     @Post('logout')
     logout(@Response() res) {
         res.clearCookie('refresh');
-        return { message: '로그아웃 되었습니다.' };
+        return res.json({ message: '로그아웃에 성공하였습니다.' });
     }
 
-    @Get('profile')
+    @Post('profile')
     getProfile(@Request() req) {
         return req.user;
     }
