@@ -3,6 +3,7 @@ import {
     Controller,
     Get,
     Post,
+    Patch,
     Request,
     Response,
     UseGuards,
@@ -58,9 +59,14 @@ export class AuthController {
         return res.json({ message: '로그아웃에 성공하였습니다.' });
     }
 
-    @Post('profile')
+    @Get('profile')
     getProfile(@Request() req) {
         return req.user;
+    }
+
+    @Patch('avatar')
+    updateAvatar(@Request() req, @Body('avatar') avatar: string) {
+        return this.authService.updateAvatar(req.user.email, avatar);
     }
 
     @Public()

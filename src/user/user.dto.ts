@@ -30,10 +30,6 @@ export class CreateUserDto {
     @IsOptional()
     @IsPasswordMatching('password')
     confirmPassword?: string;
-
-    @IsString()
-    @IsOptional()
-    providerId?: string;
 }
 
 export class UpdateUserDto {

@@ -16,14 +16,14 @@ POST {{server}}/auth/login
 Content-Type: application/json
 
 {
-    "email": "test@naver.com",
-    "password": "Ttest1234"
+    "email": "tt@naver.com",
+    "password": "qQwer1234"
 }
 
 ### 프로필
-POST  {{server}}/auth/profile
+GET  {{server}}/auth/profile
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkxlZSIsInJvbGVzIjpbInVzZXIiXSwic3ViIjoiNjUyOTEzNjY3NDMyOTJkNDI3NzZjMjRjIiwiaWF0IjoxNjk3MjI0MDYxLCJleHAiOjE2OTcyMjU4NjF9.wvLv9H7zrfjzJODW_P1aPNFlSmUWHXtoA62NmPBqjSw
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Iu2VmOydtOyaqSIsInJvbGVzIjpbInVzZXIiXSwiYXZhdGFyIjoiIiwic3ViIjoiNjUzNDkyYzcwOTViZjFmMWY4YTllMjUyIiwiaWF0IjoxNjk3OTQ4Njg2LCJleHAiOjE2OTc5NTA0ODZ9.QgXLevVzcx_bPp99xno4TKaWVRox3_qkD8-ZH058p8M
 
 ### 리프레쉬 토큰 쿠키 테스트
 POST  {{server}}/auth/refreshToken
@@ -33,3 +33,13 @@ credentials: 'include'
 ### 로그아웃
 POST {{server}}/auth/logout
 Content-Type: application/json
+
+### 아바타 업데이트
+
+PATCH {{server}}/auth/avatar
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Iu2VmOydtOyaqSIsInJvbGVzIjpbInVzZXIiXSwiZW1haWwiOiJ0dEBuYXZlci5jb20iLCJhdmF0YXIiOiIiLCJzdWIiOiI2NTM0OTJjNzA5NWJmMWYxZjhhOWUyNTIiLCJpYXQiOjE2OTc5NDkyNzYsImV4cCI6MTY5Nzk1MTA3Nn0.RthSeBOULzUXYo_sbvTpZeWfOpXhSj1DB-TsOelrpjs
+
+{
+    "avatar": "남자"
+}

@@ -10,6 +10,7 @@ export interface UserRepository {
     getUser(email: string): Promise<UserDocument>;
     updateUser(email: string, user: UpdateUserDto): Promise<UserDocument>;
     deleteUser(email: string): Promise<unknown>;
+    updateAvatar(email: string, avatar: string): Promise<UserDocument>;
 }
 
 @Injectable()
@@ -36,5 +37,13 @@ export class UserMongoRepository implements UserRepository {
 
     deleteUser(email: string): Promise<unknown> {
         return this.userModel.deleteOne({ email });
+    }
+
+    updateAvatar(email: string, avatar: string) {
+        return this.userModel.findOneAndUpdate(
+            { email },
+            { $set: { avatar } },
+            { new: true },
+        );
     }
 }

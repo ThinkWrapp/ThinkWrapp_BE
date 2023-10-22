@@ -61,7 +61,13 @@ export class AuthService {
     }
 
     login(user: AuthUserType, res: Response) {
-        const payload = { username: user.username, roles: user.roles, sub: user._id };
+        const payload = {
+            username: user.username,
+            roles: user.roles,
+            email: user.email,
+            avatar: user.avatar,
+            sub: user._id,
+        };
         const access_token = this.jwtService.sign(payload);
         const refresh_token = this.jwtService.sign(payload, { expiresIn: '7d' });
 
@@ -85,16 +91,29 @@ export class AuthService {
         }
     }
 
+    async updateAvatar(email: string, newAvatar: string) {
+        const { avatar } = await this.userService.updateAvatar(email, newAvatar);
+        return avatar;
+    }
+
     generateAccessToken(user: AuthJwtPayloadType) {
-        const payload = { username: user.username, roles: user.roles, sub: user.sub };
+        const payload = {
+            username: user.username,
+            email: user.email,
+            roles: user.roles,
+            avatar: user.avatar,
+            sub: user.sub,
+        };
         return this.jwtService.sign(payload);
     }
 
     googleAuth(user: AuthUserType, res: Response) {
         const payload = {
             username: user.username,
+            email: user.email,
+            avatar: user.avatar,
             roles: user.roles,
-            sub: user.providerId,
+            sub: user._id,
         };
 
         const refresh_token = this.jwtService.sign(payload, { expiresIn: '7d' });
@@ -106,6 +125,6 @@ export class AuthService {
             secure: false,
         });
 
-        return res.redirect(`${this.configService.get('FRONTEND_URL')}/loadingAuth`);
+        return res.redirect(`${this.configService.get('FRONTEND_URL')}/social-auth`);
     }
 }

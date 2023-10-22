@@ -23,11 +23,7 @@ export class UserService {
         return this.userRepository.deleteUser(email);
     }
 
-    async findByEmailOrSave(
-        email: string,
-        username: string,
-        providerId: string,
-    ): Promise<AuthUserType> {
+    async findByEmailOrSave(email: string, username: string): Promise<AuthUserType> {
         const foundUser = await this.getUser(email);
 
         if (foundUser) {
@@ -37,9 +33,12 @@ export class UserService {
         const newUser = await this.userRepository.createUser({
             email,
             username,
-            providerId,
         });
 
         return newUser;
+    }
+
+    updateAvatar(email: string, avatar: string) {
+        return this.userRepository.updateAvatar(email, avatar);
     }
 }

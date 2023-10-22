@@ -18,14 +18,14 @@ export class User {
     @Prop()
     password: string;
 
-    @Prop()
-    providerId: string;
-
     @Prop({
         type: [String],
         default: ['user'],
     })
     roles: string[];
+
+    @Prop({ default: '' })
+    avatar: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
