@@ -38,7 +38,7 @@ export class UserService {
         return newUser;
     }
 
-    updateAvatar(email: string, avatar: string) {
-        return this.userRepository.updateAvatar(email, avatar);
+    updateAvatar(email: string, avatarUrl: string) {
+        return this.userRepository.updateAvatar(email, avatarUrl);
     }
 }

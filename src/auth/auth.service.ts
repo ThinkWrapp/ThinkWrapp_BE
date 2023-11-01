@@ -65,7 +65,7 @@ export class AuthService {
             username: user.username,
             roles: user.roles,
             email: user.email,
-            avatar: user.avatar,
+            avatarUrl: user.avatarUrl,
             sub: user._id,
         };
         const access_token = this.jwtService.sign(payload);
@@ -91,9 +91,9 @@ export class AuthService {
         }
     }
 
-    async updateAvatar(email: string, newAvatar: string) {
-        const { avatar } = await this.userService.updateAvatar(email, newAvatar);
-        return avatar;
+    async updateAvatar(email: string, newAvatarUrl: string) {
+        const { avatarUrl } = await this.userService.updateAvatar(email, newAvatarUrl);
+        return avatarUrl;
     }
 
     generateAccessToken(user: AuthJwtPayloadType) {
@@ -101,7 +101,7 @@ export class AuthService {
             username: user.username,
             email: user.email,
             roles: user.roles,
-            avatar: user.avatar,
+            avatarUrl: user.avatarUrl,
             sub: user.sub,
         };
         return this.jwtService.sign(payload);
@@ -111,7 +111,7 @@ export class AuthService {
         const payload = {
             username: user.username,
             email: user.email,
-            avatar: user.avatar,
+            avatarUrl: user.avatarUrl,
             roles: user.roles,
             sub: user._id,
         };

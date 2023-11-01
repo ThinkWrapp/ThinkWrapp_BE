@@ -64,9 +64,9 @@ export class AuthController {
         return req.user;
     }
 
-    @Patch('avatar')
-    updateAvatar(@Request() req, @Body('avatar') avatar: string) {
-        return this.authService.updateAvatar(req.user.email, avatar);
+    @Patch('avatarUrl')
+    updateAvatar(@Request() req, @Body('avatarUrl') avatarUrl: string) {
+        return this.authService.updateAvatar(req.user.email, avatarUrl);
     }
 
     @Public()

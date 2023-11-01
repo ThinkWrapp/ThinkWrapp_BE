@@ -39,10 +39,10 @@ export class UserMongoRepository implements UserRepository {
         return this.userModel.deleteOne({ email });
     }
 
-    updateAvatar(email: string, avatar: string) {
+    updateAvatar(email: string, avatarUrl: string) {
         return this.userModel.findOneAndUpdate(
             { email },
-            { $set: { avatar } },
+            { $set: { avatarUrl } },
             { new: true },
         );
     }
