@@ -7,6 +7,22 @@ export type RoomFormDataType = {
     avatarUrl: string;
 };
 
+export type Character = {
+    id: string;
+    session: number;
+    position: number[];
+    avatarUrl: string;
+    path?: number[][];
+};
+
+export type Room = RoomFormDataType & {
+    size: number[];
+    gridDivision: number;
+    characters: Character[];
+    videos: any;
+    grid: any;
+};
+
 export type LoadRoomSendData = {
     map: {
         gridDivision: number;

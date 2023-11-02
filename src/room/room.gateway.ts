@@ -87,31 +87,6 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.roomService.setClientData(email, clientData);
     }
 
-    // @SubscribeMessage('loadRoom')
-    // onLoadRoom(client: Socket, roomId: string) {
-    //     const room = this.roomService.getRoom(roomId);
-    //     const email = client.handshake.query.email as string;
-    //     if (!room || !email) return;
-
-    //     client.join(roomId);
-
-    // const sendData: LoadRoomSendData = {
-    //     map: {
-    //         gridDivision: room.gridDivision,
-    //         size: room.size,
-    //     },
-    //     characters: room.characters,
-    //     id: email,
-    // };
-
-    //     if (room.password && room.email === email) {
-    //         sendData.password = room.password;
-    //     }
-
-    //     console.log('센드데이터', sendData);
-    //     client.emit('roomJoined', sendData);
-    // }
-
     @SubscribeMessage('joinRoom')
     onJoinRoom(client: Socket, { roomId, avatarUrl }) {
         const email = client.handshake.query.email as string;
@@ -169,6 +144,47 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
         cliendData.room = null;
         this.roomService.setClientData(email, cliendData);
+    }
+
+    @SubscribeMessage('move')
+    onMove(client: Socket, { from, to }) {
+        const email = client.handshake.query.email as string;
+        const clientData = this.roomService.getClientData(email);
+        const room = clientData.room;
+        const character = clientData.character;
+        const path = this.roomService.findPath(room, from, to);
+
+        if (!path) return;
+
+        character.position = from;
+        character.path = path;
+        this.server.to(room.id).emit('playerMove', character);
+    }
+
+    @SubscribeMessage('dance')
+    onDance(client: Socket, danceName: string) {
+        const email = client.handshake.query.email as string;
+        const clientData = this.roomService.getClientData(email);
+        const room = clientData.room;
+
+        this.server.to(room.id).emit('playerDance', {
+            id: email,
+            danceName,
+        });
+    }
+
+    @SubscribeMessage('chatMessage')
+    onChatMessage(client: Socket, message: string) {
+        const email = client.handshake.query.email as string;
+        const clientData = this.roomService.getClientData(email);
+        const room = clientData.room;
+
+        if (!room) return;
+
+        this.server.to(room.id).emit('playerChatMessage', {
+            id: email,
+            message,
+        });
     }
 
     handleDisconnect(client: Socket) {

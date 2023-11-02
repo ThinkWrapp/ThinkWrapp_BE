@@ -1,14 +1,19 @@
 import * as pathfinding from 'pathfinding';
 import { Injectable } from '@nestjs/common';
-import { RoomFormDataType } from 'src/types/room';
+import { Room, RoomFormDataType } from 'src/types/room';
 import { Server } from 'socket.io';
+import { ClientsType } from 'src/types/auth';
 
 @Injectable()
 export class RoomService {
     private rooms = [];
-    private clients = new Map<string, any>();
+    private clients = new Map<string, ClientsType>();
+    private finder = new pathfinding.AStarFinder({
+        allowDiagonal: true,
+        dontCrossCorners: true,
+    });
 
-    generateRandomPosition(room) {
+    generateRandomPosition(room: Room) {
         for (let i = 0; i < 100; i++) {
             const x = Math.floor(Math.random() * room.size[0] * room.gridDivision);
             const y = Math.floor(Math.random() * room.size[1] * room.gridDivision);
@@ -16,6 +21,12 @@ export class RoomService {
                 return [x, y];
             }
         }
+    }
+
+    findPath(room: Room, start: number[], end: number[]) {
+        const gridClone = room.grid.clone();
+        const path = this.finder.findPath(start[0], start[1], end[0], end[1], gridClone);
+        return path;
     }
 
     onRoomUpdate(email: string, server: Server) {
