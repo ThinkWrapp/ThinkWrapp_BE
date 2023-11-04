@@ -7,7 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { RoomService } from './room.service';
-import { LoadRoomSendData, RoomFormDataType } from 'src/types/room';
+import { Item, LoadRoomSendData, RoomFormDataType } from 'src/types/room';
 
 @WebSocketGateway({
     cors: { origin: 'http://localhost:5173' },
@@ -20,17 +20,18 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     handleConnection(client: Socket) {
         console.log('서버 접속');
+        const items = this.roomService.getItems();
         const rooms = this.roomService.getRooms();
 
-        client.emit(
-            'welcome',
-            rooms.map((room) => ({
+        client.emit('welcome', {
+            rooms: rooms.map((room) => ({
                 id: room.id,
                 name: room.roomName,
                 nbCharacters: room.characters.length,
                 roomLimitPeople: room.roomLimitPeople,
             })),
-        );
+            items,
+        });
 
         if (!client.handshake.query.email) return;
 
@@ -63,6 +64,7 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
             map: {
                 gridDivision: room.gridDivision,
                 size: room.size,
+                items: room.items,
             },
             characters: room.characters,
             id: email,
@@ -143,7 +145,33 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.roomService.onRoomUpdate(email, this.server);
 
         cliendData.room = null;
+        cliendData.character = null;
         this.roomService.setClientData(email, cliendData);
+    }
+
+    @SubscribeMessage('itemsUpdate')
+    onItemsUpdate(client: Socket, items: Item[]) {
+        const email = client.handshake.query.email as string;
+        const clientData = this.roomService.getClientData(email);
+        const room = clientData.room;
+
+        if (!items || !room) return;
+
+        room.items = items;
+        this.roomService.updateGrid(room);
+
+        room.characters.forEach((character) => {
+            character.path = [];
+            character.position = this.roomService.generateRandomPosition(room);
+        });
+        this.server.to(room.id).emit('mapUpdate', {
+            map: {
+                gridDivision: room.gridDivision,
+                size: room.size,
+                items: room.items,
+            },
+            characters: room.characters,
+        });
     }
 
     @SubscribeMessage('move')
@@ -189,5 +217,27 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     handleDisconnect(client: Socket) {
         console.log('서버 접속해제');
+
+        const email = client.handshake.query.email as string;
+        const cliendData = this.roomService.getClientData(email);
+        const room = cliendData.room;
+
+        if (!room) return;
+
+        client.leave(room.id);
+
+        room.characters.splice(
+            room.characters.findIndex((character) => character.id === email),
+            1,
+        );
+
+        if (room.characters.length === 0) {
+            this.roomService.removeRoom(room.id);
+        }
+        this.roomService.onRoomUpdate(email, this.server);
+
+        cliendData.room = null;
+        cliendData.character = null;
+        this.roomService.setClientData(email, cliendData);
     }
 }
