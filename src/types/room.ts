@@ -5,6 +5,7 @@ export type RoomFormDataType = {
     password?: string;
     roomLimitPeople: number;
     avatarUrl: string;
+    peerId?: string;
 };
 
 export type Character = {
@@ -37,6 +38,11 @@ export type Room = RoomFormDataType & {
     items: Item[];
 };
 
+export type Video = {
+    id: string;
+    isVideoMuted: boolean;
+};
+
 export type LoadRoomSendData = {
     map: {
         gridDivision: number;
@@ -44,6 +50,7 @@ export type LoadRoomSendData = {
         items: Item[];
     };
     characters: any[];
+    videos: Video[];
     id: string;
     password?: string;
 };

@@ -19,31 +19,31 @@ export class UserMongoRepository implements UserRepository {
         @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     ) {}
 
-    createUser(user: CreateUserDto): Promise<UserDocument> {
+    async createUser(user: CreateUserDto): Promise<UserDocument> {
         return this.userModel.create(user);
     }
 
-    getUser(email: string): Promise<UserDocument> {
-        return this.userModel.findOne({ email });
+    async getUser(email: string): Promise<UserDocument> {
+        return this.userModel.findOne({ email }).exec();
     }
 
-    updateUser(email: string, user: UpdateUserDto): Promise<UserDocument> {
-        return this.userModel.findOneAndUpdate(
-            { email },
-            { $set: { ...user, updatedAt: new Date() } },
-            { new: true },
-        );
+    async updateUser(email: string, user: UpdateUserDto): Promise<UserDocument> {
+        return this.userModel
+            .findOneAndUpdate(
+                { email },
+                { $set: { ...user, updatedAt: new Date() } },
+                { new: true },
+            )
+            .exec();
     }
 
-    deleteUser(email: string): Promise<unknown> {
+    async deleteUser(email: string): Promise<unknown> {
         return this.userModel.deleteOne({ email });
     }
 
-    updateAvatar(email: string, avatarUrl: string) {
-        return this.userModel.findOneAndUpdate(
-            { email },
-            { $set: { avatarUrl } },
-            { new: true },
-        );
+    async updateAvatar(email: string, avatarUrl: string) {
+        return this.userModel
+            .findOneAndUpdate({ email }, { $set: { avatarUrl } }, { new: true })
+            .exec();
     }
 }

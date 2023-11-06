@@ -41,7 +41,8 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('createRoom')
     onCreateRoom(client: Socket, roomData: RoomFormDataType) {
         const email = client.handshake.query.email as string;
-        this.roomService.createRoom({ ...roomData, email });
+        const { peerId, ...data } = roomData;
+        this.roomService.createRoom({ ...data, email });
 
         const clientData = this.roomService.getClientData(email);
         const rooms = this.roomService.getRooms();
@@ -52,13 +53,20 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
         client.join(roomData.id);
 
         const character = {
-            id: email,
+            id: client.id,
             session: parseInt(`${Math.random() * 10000}`),
             position: this.roomService.generateRandomPosition(room),
             avatarUrl: roomData.avatarUrl,
         };
 
+        const video = {
+            id: peerId,
+            isVideoMuted: true,
+            isPlaying: false,
+        };
+
         room.characters.push(character);
+        room.videos.push(video);
 
         const sendData: LoadRoomSendData = {
             map: {
@@ -67,7 +75,8 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 items: room.items,
             },
             characters: room.characters,
-            id: email,
+            videos: room.videos,
+            id: client.id,
             password: room.password,
         };
 
@@ -85,12 +94,13 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
         clientData.room = room;
         clientData.character = character;
+        clientData.peerId = peerId;
 
         this.roomService.setClientData(email, clientData);
     }
 
     @SubscribeMessage('joinRoom')
-    onJoinRoom(client: Socket, { roomId, avatarUrl }) {
+    onJoinRoom(client: Socket, { roomId, avatarUrl, peerId }) {
         const email = client.handshake.query.email as string;
         const room = this.roomService.getRoom(roomId);
         const clientData = this.roomService.getClientData(email);
@@ -100,13 +110,20 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
         client.join(room.id);
 
         const character = {
-            id: email,
+            id: client.id,
             session: parseInt(`${Math.random() * 10000}`),
             position: this.roomService.generateRandomPosition(room),
             avatarUrl,
         };
 
+        const video = {
+            id: peerId,
+            isVideoMuted: true,
+            isPlaying: false,
+        };
+
         room.characters.push(character);
+        room.videos.push(video);
 
         client.emit('roomJoined', {
             map: {
@@ -115,11 +132,14 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 items: room.items,
             },
             characters: room.characters,
-            id: email,
+            id: client.id,
         });
+
+        this.server.to(room.id).emit('video', room.videos);
 
         clientData.room = room;
         clientData.character = character;
+        clientData.peerId = peerId;
         this.roomService.setClientData(email, clientData);
         this.roomService.onRoomUpdate(email, this.server);
     }
@@ -129,13 +149,20 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const email = client.handshake.query.email as string;
         const cliendData = this.roomService.getClientData(email);
         const room = cliendData.room;
+        const peerId = cliendData.peerId;
 
         if (!room) return;
+        client.to(room.id).emit('userDisconnect', peerId);
 
         client.leave(room.id);
 
         room.characters.splice(
-            room.characters.findIndex((character) => character.id === email),
+            room.characters.findIndex((character) => character.id === client.id),
+            1,
+        );
+
+        room.videos.splice(
+            room.videos.findIndex((video) => video.id === cliendData.peerId),
             1,
         );
 
@@ -146,6 +173,7 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
         cliendData.room = null;
         cliendData.character = null;
+        cliendData.peerId = null;
         this.roomService.setClientData(email, cliendData);
     }
 
@@ -215,19 +243,43 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
         });
     }
 
+    @SubscribeMessage('videoMute')
+    onUpdateVideo(client: Socket, isVideoMuted: boolean) {
+        const email = client.handshake.query.email as string;
+        const clientData = this.roomService.getClientData(email);
+        const room = clientData.room;
+        const peerId = clientData.peerId;
+
+        if (!room || !room.videos) {
+            return;
+        }
+
+        const video = room.videos.find((video) => video.id === clientData.peerId);
+
+        video.isVideoMuted = isVideoMuted;
+        client.to(room.id).emit('userVideoMute', { peerId, isVideoMuted });
+    }
+
     handleDisconnect(client: Socket) {
         console.log('서버 접속해제');
 
         const email = client.handshake.query.email as string;
         const cliendData = this.roomService.getClientData(email);
         const room = cliendData.room;
+        const peerId = cliendData.peerId;
 
         if (!room) return;
+        client.to(room.id).emit('userDisconnect', peerId);
 
         client.leave(room.id);
 
         room.characters.splice(
-            room.characters.findIndex((character) => character.id === email),
+            room.characters.findIndex((character) => character.id === client.id),
+            1,
+        );
+
+        room.videos.splice(
+            room.videos.findIndex((video) => video.id === cliendData.peerId),
             1,
         );
 
@@ -238,6 +290,7 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
         cliendData.room = null;
         cliendData.character = null;
+        cliendData.peerId = null;
         this.roomService.setClientData(email, cliendData);
     }
 }

@@ -60,7 +60,7 @@ export class AuthService {
         return null;
     }
 
-    login(user: AuthUserType, res: Response) {
+    async login(user: AuthUserType, res: Response) {
         const payload = {
             username: user.username,
             roles: user.roles,
@@ -96,7 +96,7 @@ export class AuthService {
         return avatarUrl;
     }
 
-    generateAccessToken(user: AuthJwtPayloadType) {
+    async generateAccessToken(user: AuthJwtPayloadType) {
         const payload = {
             username: user.username,
             email: user.email,
@@ -107,7 +107,7 @@ export class AuthService {
         return this.jwtService.sign(payload);
     }
 
-    googleAuth(user: AuthUserType, res: Response) {
+    async googleAuth(user: AuthUserType, res: Response) {
         const payload = {
             username: user.username,
             email: user.email,

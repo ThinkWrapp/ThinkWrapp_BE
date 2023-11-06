@@ -7,19 +7,19 @@ import { AuthUserType } from 'src/types/auth';
 export class UserService {
     constructor(private readonly userRepository: UserMongoRepository) {}
 
-    createUser(user: CreateUserDto) {
+    async createUser(user: CreateUserDto) {
         return this.userRepository.createUser(user);
     }
 
-    getUser(email: string) {
+    async getUser(email: string) {
         return this.userRepository.getUser(email);
     }
 
-    updateUser(email: string, user: UpdateUserDto) {
+    async updateUser(email: string, user: UpdateUserDto) {
         return this.userRepository.updateUser(email, user);
     }
 
-    deleteUser(email: string) {
+    async deleteUser(email: string) {
         return this.userRepository.deleteUser(email);
     }
 
@@ -38,7 +38,7 @@ export class UserService {
         return newUser;
     }
 
-    updateAvatar(email: string, avatarUrl: string) {
+    async updateAvatar(email: string, avatarUrl: string) {
         return this.userRepository.updateAvatar(email, avatarUrl);
     }
 }

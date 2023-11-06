@@ -349,6 +349,7 @@ export class RoomService {
         const room = clientData.room;
 
         server.to(room.id).emit('character', room.characters);
+        server.to(room.id).emit('video', room.videos);
 
         server.emit(
             'roomsUpdate',
