@@ -8,6 +8,7 @@ import { ENV_FILE_PATH } from './constants/path';
 import { AuthModule } from './auth/auth.module';
 import { RoomGateway } from './room/room.gateway';
 import { RoomService } from './room/room.service';
+import { PeerService } from './peer/peer.service';
 
 @Module({
     imports: [
@@ -20,6 +21,6 @@ import { RoomService } from './room/room.service';
         AuthModule,
     ],
     controllers: [],
-    providers: [RoomGateway, RoomService],
+    providers: [RoomGateway, RoomService, PeerService],
 })
 export class AppModule {}
