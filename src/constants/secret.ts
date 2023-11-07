@@ -8,3 +8,5 @@ export const googleConstants = {
     callbackURL: `${process.env.GOOGLE_CALLBACK_URL}`,
     scope: ['email', 'profile'],
 };
+
+export const gatewayCorsUrl = `${process.env.FRONTEND_URL}`;

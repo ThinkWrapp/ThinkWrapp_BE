@@ -8,9 +8,10 @@ import {
 import { Server, Socket } from 'socket.io';
 import { RoomService } from './room.service';
 import { Item, LoadRoomSendData, RoomFormDataType } from 'src/types/room';
+import { gatewayCorsUrl } from 'src/constants/secret';
 
 @WebSocketGateway({
-    cors: { origin: 'http://localhost:5173' },
+    cors: { origin: gatewayCorsUrl },
 })
 export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer()
