@@ -8,10 +8,15 @@ import {
 import { Server, Socket } from 'socket.io';
 import { RoomService } from './room.service';
 import { Item, LoadRoomSendData, RoomFormDataType } from 'src/types/room';
-import { gatewayCorsUrl } from 'src/constants/secret';
 
 @WebSocketGateway({
-    cors: { origin: gatewayCorsUrl },
+    cors: {
+        origin:
+            process.env.NODE_ENV.trim() === 'dev'
+                ? 'http://localhost:5173'
+                : 'https://d3d7e4gcsc7yoe.cloudfront.net',
+    },
+    namespace: '/socket',
 })
 export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer()

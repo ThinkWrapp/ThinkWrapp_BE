@@ -6,7 +6,7 @@ export class PeerService {
     private server: PeerServerEvents;
 
     constructor() {
-        this.server = PeerServer({ port: 9000, path: '/' });
+        this.server = PeerServer({ port: 9000, path: '/peer' });
     }
 
     getServer() {
