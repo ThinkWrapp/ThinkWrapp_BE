@@ -1,0 +1,49 @@
+name: Deploy to cloudtype
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Connect deploy key
+        uses: cloudtype-github-actions/connect@v1
+        with:
+          token: ${{ secrets.CLOUDTYPE_TOKEN }}
+          ghtoken: ${{ secrets.GHP_TOKEN }}
+      - name: Deploy
+        uses: cloudtype-github-actions/deploy@v1
+        with:
+          token: ${{ secrets.CLOUDTYPE_TOKEN }}
+          project: newexpand/thinkwrapp
+          stage: main
+          yaml: |
+            name: thinkwrapp-be
+            app: node@18
+            options:
+              env:
+                - name: NODE_ENV
+                  value: production
+                - name: MONGO_URI
+                  secret: MONGO_URI
+                - name: FRONTEND_URL
+                  secret: FRONTEND_URL
+                - name: JWT_SECRET
+                  secret: JWT_SECRET
+                - name: GOOGLE_CLIENT_ID
+                  secret: GOOGLE_CLIENT_ID
+                - name: GOOGLE_CLIENT_SECRET
+                  secret: GOOGLE_CLIENT_SECRET
+                - name: GOOGLE_CALLBACK_URL
+                  secret: GOOGLE_CALLBACK_URL
+              ports: 3000
+              build: yarn build
+              start: yarn start:prod
+            context:
+              git:
+                url: git@github.com:${{ github.repository }}.git
+                ref: ${{ github.ref }}
+              preset: nest.js
