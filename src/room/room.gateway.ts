@@ -14,7 +14,7 @@ import { Item, LoadRoomSendData, RoomFormDataType } from 'src/types/room';
         origin:
             process.env.NODE_ENV.trim() === 'dev'
                 ? 'http://localhost:5173'
-                : 'https://d3d7e4gcsc7yoe.cloudfront.net',
+                : 'https://thinkwrapp.site',
     },
     namespace: '/socket',
 })
