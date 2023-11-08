@@ -59,7 +59,7 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
         client.join(roomData.id);
 
         const character = {
-            id: client.id,
+            id: email,
             session: parseInt(`${Math.random() * 10000}`),
             position: this.roomService.generateRandomPosition(room),
             avatarUrl: roomData.avatarUrl,
@@ -116,7 +116,7 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
         client.join(room.id);
 
         const character = {
-            id: client.id,
+            id: email,
             session: parseInt(`${Math.random() * 10000}`),
             position: this.roomService.generateRandomPosition(room),
             avatarUrl,
@@ -163,7 +163,7 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
         client.leave(room.id);
 
         room.characters.splice(
-            room.characters.findIndex((character) => character.id === client.id),
+            room.characters.findIndex((character) => character.id === email),
             1,
         );
 
@@ -280,7 +280,7 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
         client.leave(room.id);
 
         room.characters.splice(
-            room.characters.findIndex((character) => character.id === client.id),
+            room.characters.findIndex((character) => character.id === email),
             1,
         );
 
