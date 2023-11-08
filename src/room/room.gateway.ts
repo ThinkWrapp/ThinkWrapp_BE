@@ -82,7 +82,7 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
             },
             characters: room.characters,
             videos: room.videos,
-            id: client.id,
+            id: email,
             password: room.password,
         };
 
@@ -138,7 +138,7 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 items: room.items,
             },
             characters: room.characters,
-            id: client.id,
+            id: email,
         });
 
         this.server.to(room.id).emit('video', room.videos);
