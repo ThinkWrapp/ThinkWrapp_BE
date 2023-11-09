@@ -47,7 +47,7 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('createRoom')
     onCreateRoom(client: Socket, roomData: RoomFormDataType) {
         const email = client.handshake.query.email as string;
-        const { peerId, ...data } = roomData;
+        const { peerId, userName, ...data } = roomData;
         this.roomService.createRoom({ ...data, email });
 
         const clientData = this.roomService.getClientData(email);
@@ -63,6 +63,7 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
             session: parseInt(`${Math.random() * 10000}`),
             position: this.roomService.generateRandomPosition(room),
             avatarUrl: roomData.avatarUrl,
+            userName,
         };
 
         const video = {
@@ -106,7 +107,7 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     @SubscribeMessage('joinRoom')
-    onJoinRoom(client: Socket, { roomId, avatarUrl, peerId }) {
+    onJoinRoom(client: Socket, { roomId, avatarUrl, peerId, userName }) {
         const email = client.handshake.query.email as string;
         const room = this.roomService.getRoom(roomId);
         const clientData = this.roomService.getClientData(email);
@@ -120,6 +121,7 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
             session: parseInt(`${Math.random() * 10000}`),
             position: this.roomService.generateRandomPosition(room),
             avatarUrl,
+            userName,
         };
 
         const video = {
@@ -236,7 +238,7 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     @SubscribeMessage('chatMessage')
-    onChatMessage(client: Socket, message: string) {
+    onChatMessage(client: Socket, { message, userName }) {
         const email = client.handshake.query.email as string;
         const clientData = this.roomService.getClientData(email);
         const room = clientData.room;
@@ -246,6 +248,7 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.server.to(room.id).emit('playerChatMessage', {
             id: email,
             message,
+            userName,
         });
     }
 

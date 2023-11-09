@@ -6,6 +6,7 @@ export type RoomFormDataType = {
     roomLimitPeople: number;
     avatarUrl: string;
     peerId?: string;
+    userName?: string;
 };
 
 export type Character = {
