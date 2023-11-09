@@ -69,7 +69,7 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const video = {
             id: peerId,
             isVideoMuted: true,
-            isPlaying: false,
+            userName,
         };
 
         room.characters.push(character);
@@ -127,7 +127,7 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const video = {
             id: peerId,
             isVideoMuted: true,
-            isPlaying: false,
+            userName,
         };
 
         room.characters.push(character);
@@ -253,7 +253,7 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     @SubscribeMessage('videoMute')
-    onUpdateVideo(client: Socket, isVideoMuted: boolean) {
+    onUpdateVideo(client: Socket, { isVideoMuted, userName }) {
         const email = client.handshake.query.email as string;
         const clientData = this.roomService.getClientData(email);
         const room = clientData.room;
@@ -266,7 +266,7 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const video = room.videos.find((video) => video.id === clientData.peerId);
 
         video.isVideoMuted = isVideoMuted;
-        client.to(room.id).emit('userVideoMute', { peerId, isVideoMuted });
+        client.to(room.id).emit('userVideoMute', { peerId, isVideoMuted, userName });
     }
 
     handleDisconnect(client: Socket) {
