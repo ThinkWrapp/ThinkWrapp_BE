@@ -47,7 +47,7 @@ export class AuthController {
             throw new UnauthorizedException('리프레쉬 토큰이 만료되었습니다.');
         }
 
-        const access_token = this.authService.generateAccessToken(user);
+        const access_token = await this.authService.generateAccessToken(user);
 
         return { access_token };
     }
