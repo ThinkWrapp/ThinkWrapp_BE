@@ -69,6 +69,11 @@ export class AuthController {
         return this.authService.updateAvatar(req.user.email, avatarUrl);
     }
 
+    @Patch('username')
+    updateUsername(@Request() req, @Body('username') username: string) {
+        return this.authService.updateUsername(req.user.email, username);
+    }
+
     @Public()
     @Get('to-google')
     @UseGuards(GoogleAuthGuard)

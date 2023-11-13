@@ -96,6 +96,14 @@ export class AuthService {
         return avatarUrl;
     }
 
+    async updateUsername(email: string, newUsername: string) {
+        const { username } = await this.userService.updateUser(email, {
+            username: newUsername,
+        });
+
+        return username;
+    }
+
     async generateAccessToken(user: AuthJwtPayloadType) {
         const payload = {
             username: user.username,
