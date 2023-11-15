@@ -130,7 +130,7 @@ export class AuthService {
             httpOnly: true,
             maxAge: 1000 * 60 * 60 * 24 * 7,
             sameSite: 'lax',
-            secure: false,
+            secure: process.env.NODE_ENV === 'dev' ? false : true,
         });
 
         return res.redirect(`${this.configService.get('FRONTEND_URL')}/social-auth`);
