@@ -76,7 +76,7 @@ export class AuthService {
             maxAge: 1000 * 60 * 60 * 24 * 7,
             sameSite: process.env.NODE_ENV === 'dev' ? 'lax' : 'none',
             secure: process.env.NODE_ENV === 'dev' ? false : true,
-            domain: this.configService.get('FRONTEND_URL'),
+            domain: process.env.NODE_ENV === 'dev' ? 'localhost' : 'thinkwrapp.site',
         });
 
         return res.json({ message: '로그인에 성공하였습니다.', access_token });
